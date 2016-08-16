@@ -63,6 +63,10 @@ bot.dialog('/', [
                 
                 client.GetFlowUrl(reqJSON, function (err, result) {
                     //console.log("gg:" + result);
+                    if(err) {
+                        session.send("UFD Error:", err.toString());  
+                        return;
+                    }
                     session.send("UFD Response:", result);
                 });
             }
