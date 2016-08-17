@@ -21,13 +21,17 @@ server.post("/api/messages", connector.listen());
 //Bots Dialogs...
 bot.dialog('/', [
     function (session) {
+        var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
+        if (null != session.userData.prevRequest["Request"]) {
+            reqData = session.userData.prevRequest;
+        }
         var Client = require('node-rest-client').Client;
         var client = new Client();
         // set content-type header and data as json in args parameter 
         //session.send("Client created...");
         var args = {
             "headers": { "Content-Type": "application/json" },
-            "data": { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } }
+            "data": reqData
         };
         //session.send("Sending request...");
         var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
@@ -37,6 +41,7 @@ bot.dialog('/', [
                 var parsedData = "";
                 if (null != data) {
                     parsedData = JSON.parse(data);
+                    session.userData.prevRequest = parsedData;
                     var ques = parsedData["Response"];
                     if (null != ques) {
                         builder.Prompts.text(session, ques);
@@ -58,8 +63,16 @@ bot.dialog('/', [
     },
     function (session, results) {
         if (results.response) {
-            session.send("Your choice is:" + results.response);
-            session.endDialog();
+            //session.send("Your choice is:" + results.response);
+            if (null != session.userData.prevRequest) {
+                delete session.userData.prevRequest["Response"];
+                if (null != session.userData.prevRequest["Request"]) {
+                    delete session.userData.prevRequest["Request"];
+                }
+                session.userData.prevRequest["Request"] = { "ThisValue": results.response };
+            }
+            //session.endDialog();
+            session.beginDialog("/");
         }
     }
 ]);
