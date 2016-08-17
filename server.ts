@@ -22,57 +22,35 @@ server.post("/api/messages", connector.listen());
 //Bots Dialogs...
 bot.dialog('/', [
     function (session) {
-        builder.Prompts.text(session, "Hello... What's your name?");
-    },
-    function (session, results) {
-        session.userData.name = results.response;
-        //builder.Prompts.number(session, "Hi " + results.response + ", How many years have you been coding?");
-        var soap = require("soap");
-        var url = "https://www98.verizon.com/foryourhome/vzrepair/flowengine/UFDGateway.asmx?wsdl";
-        soap.createClient(url, function (err, client) {
-            try {
-                var reqJSON = {
-                    "Request": {
-                        "Platform" : "TV",
-                        "Application":"VMS",
-                        "DeviceModel":"7100",
-                        "Profile":{
-                            "CktId":"",
-                            "PCAN": "",
-                            "BTN":"",
-                            "VisionId":""
-                        },
-                        "ErrCode":"110",
-                        "QuickCode": "8801",
-                        "ErrMsg":"Channel Unsubscribed",
-                        "Channel" : "1490",
-                        "SN":"",
-                        "UA":"0000058463981078",
-                        "Asset": {
-                            "AssetId":"",
-                            "Title":"",
-                            "Format":""
-                        },
-                        "Flow":"VMStOeCRM",
-                        "DestinationFlow":"MasterFlow",
-                        "ContactPreference":"EMAIL",
-                        "ContactPrefValue":"ramprasath.x.hariharan@one.verizon.com",
-                        "RESPONSETYPE":"JSON"
-                    }
-                };
-                
-                client.GetFlowUrl(reqJSON, function (err, result) {
-                    //console.log("gg:" + result);
-                    if(err) {
-                        session.send("UFD Error:", err.toString());  
-                        return;
-                    }
-                    session.send("UFD Response:", result);
-                });
+        var Client = require('node-rest-client').Client;
+        var client = new Client();
+        // set content-type header and data as json in args parameter 
+        var args = {
+            "headers": { "Content-Type": "application/json" },
+            "data" : {"Flow": "TroubleShooting Flows\\Test\\GSTest.xml","Request":{"ThisValue":"1"}}
+        };
+        var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
+            // parsed response body as js object 
+            if(null != data) {
+                var ques = data["Response"];
+                if (null != ques) {
+                    builder.Prompts.text(session, ques);
+                }
             }
-            catch (e) {
-                console.log("error: " + e);
+            else {
+                session.send("Response is Empty!");    
+                session.endDialog();
             }
         });
+        req.on("error", function(err) {
+            session.send("Error:" + err);
+            session.endDialog();
+        });
+    },
+    function (session, results) {
+        if(results.response) {
+            session.send("Your choice is:" + results.response);
+            session.endDialog();
+        }
     }
 ]);
