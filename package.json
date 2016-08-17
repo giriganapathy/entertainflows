@@ -10,6 +10,6 @@
   "dependencies": {
     "botbuilder": "^3.2.3",
     "restify": "^4.1.1",
-    "soap": "^0.16.0"
+    "node-rest-client": "^1.8.0"
   }
 }
