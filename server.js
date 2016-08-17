@@ -24,12 +24,12 @@ bot.dialog('/', [
         var Client = require('node-rest-client').Client;
         var client = new Client();
         // set content-type header and data as json in args parameter 
-        session.send("Client created...");
+        //session.send("Client created...");
         var args = {
             "headers": { "Content-Type": "application/json" },
             "data": { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } }
         };
-        session.send("Sending request...");
+        //session.send("Sending request...");
         var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
             try {
                 session.send("got the data:" + data);
