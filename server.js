@@ -24,21 +24,29 @@ bot.dialog('/', [
         var Client = require('node-rest-client').Client;
         var client = new Client();
         // set content-type header and data as json in args parameter 
+        session.send("Client created...");
         var args = {
             "headers": { "Content-Type": "application/json" },
             "data": { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } }
         };
+        session.send("Sending request...");
         var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
-            // parsed response body as js object 
-            if (null != data) {
-                var ques = data["Response"];
-                if (null != ques) {
-                    builder.Prompts.text(session, ques);
+            try {
+                session.send("got the data:" + data);
+                // parsed response body as js object 
+                if (null != data) {
+                    var ques = data["Response"];
+                    if (null != ques) {
+                        builder.Prompts.text(session, ques);
+                    }
+                }
+                else {
+                    session.send("Response is Empty!");
+                    session.endDialog();
                 }
             }
-            else {
-                session.send("Response is Empty!");
-                session.endDialog();
+            catch (ex) {
+                session.send("Error:" + ex);
             }
         });
         req.on("error", function (err) {
