@@ -22,7 +22,7 @@ server.post("/api/messages", connector.listen());
 bot.dialog('/', [
     function (session) {
         var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
-        if (null != session.userData.prevRequest["Request"]) {
+        if (null != session.userData.prevRequest && null != session.userData.prevRequest["Request"]) {
             reqData = session.userData.prevRequest;
         }
         var Client = require('node-rest-client').Client;
