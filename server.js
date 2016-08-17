@@ -32,7 +32,7 @@ bot.dialog('/', [
         //session.send("Sending request...");
         var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
             try {
-                session.send("got the data:" + data);
+                //session.send("got the data:" + data);
                 var parsedData = JSON.parse(data);
                 // parsed response body as js object 
                 if (null != data) {
