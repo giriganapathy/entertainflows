@@ -18,7 +18,6 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 });
 var bot = new builder.UniversalBot(connector);
 server.post("/api/messages", connector.listen());
-
 //Bots Dialogs...
 bot.dialog('/', [
     function (session) {
@@ -27,30 +26,31 @@ bot.dialog('/', [
         // set content-type header and data as json in args parameter 
         var args = {
             "headers": { "Content-Type": "application/json" },
-            "data" : {"Flow": "TroubleShooting Flows\\Test\\GSTest.xml","Request":{"ThisValue":"1"}}
+            "data": { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } }
         };
         var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
             // parsed response body as js object 
-            if(null != data) {
+            if (null != data) {
                 var ques = data["Response"];
                 if (null != ques) {
                     builder.Prompts.text(session, ques);
                 }
             }
             else {
-                session.send("Response is Empty!");    
+                session.send("Response is Empty!");
                 session.endDialog();
             }
         });
-        req.on("error", function(err) {
+        req.on("error", function (err) {
             session.send("Error:" + err);
             session.endDialog();
         });
     },
     function (session, results) {
-        if(results.response) {
+        if (results.response) {
             session.send("Your choice is:" + results.response);
             session.endDialog();
         }
     }
 ]);
+//# sourceMappingURL=server.js.map
