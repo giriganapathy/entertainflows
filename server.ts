@@ -42,19 +42,23 @@ bot.dialog('/', [
                 //session.send("got the data:" + data);                
                 // parsed response body as js object 
                 var parsedData = "";
-                if (null != data) {                    
+                if (null != data) {         
+                    session.send("resp:" + data);         
                     parsedData = JSON.parse(data);
                     //Get the relevant fields from the parsedData and send them 
                     //during subsequent request.
+                    session.send("resp2:");         
                     var inputsJSON = parsedData[0]["Inputs"]["newTemp"]["Section"]["Inputs"];
                     var currRequest = {};
                     if (null != inputsJSON) {
+                        session.send("resp3:");         
                         currRequest["Platform"] = inputsJSON["Platform"];
                         currRequest["SessionID"] = inputsJSON["SessionID"];
                         currRequest["CurrentStep"] = inputsJSON["CurrentStep"];
                         currRequest["SubFlow"] = inputsJSON["SubFlow"];
                         currRequest["TID"] = inputsJSON["TID"];
                         currRequest["Level"] = inputsJSON["Level"];
+                        session.send("resp4:");         
                     }
                     session.userData.prevRequest = currRequest;
                     var ques = inputsJSON["Response"];
