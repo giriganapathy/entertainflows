@@ -46,7 +46,7 @@ bot.dialog('/', [
                     parsedData = JSON.parse(data);
                     //Get the relevant fields from the parsedData and send them 
                     //during subsequent request.
-                    var inputsJSON = parsedData["Inputs"]["newTemp"]["Section"]["Inputs"];
+                    var inputsJSON = parsedData[0]["Inputs"]["newTemp"]["Section"]["Inputs"];
                     var currRequest = {};
                     if (null != inputsJSON) {
                         currRequest["Platform"] = inputsJSON["Platform"];
