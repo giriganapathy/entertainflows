@@ -3,6 +3,8 @@ author: giri ganapathy
 -----------------------------------------------------------------------------*/
 var builder = require('botbuilder');
 var restify = require("restify");
+var ufd = require("./ufd-integration.js");
+
 // Create LUIS Dialog that points at our model and add it as the root '/' dialog for our Cortana Bot.
 //var model = process.env.model || 'https://api.projectoxford.ai/luis/v1/application?id=c413b2ef-382c-45bd-8ff0-f76d60e2a821&subscription-key=6d0966209c6e4f6b835ce34492f3e6d9&q=';
 //var dialog = new builder.LuisDialog(model);
@@ -20,79 +22,78 @@ var bot = new builder.UniversalBot(connector);
 server.post("/api/messages", connector.listen());
 
 //Bots Dialogs...
-bot.dialog('/', [
-    function (session) {
+bot.dialog('/', function (session) {
+    var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
 
-        var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
-        if (null != session.userData.prevRequest && null != session.userData.prevRequest["Request"]) {
-            reqData = session.userData.prevRequest;
+    var prevRequest = null;
+    if (null != session.userData.prevRequest) {
+        prevRequest = session.userData.prevRequest;
+    }
+
+    ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
+        var currRequest = {};
+        if (null != responseJSON) {
+            currRequest["Platform"] = responseJSON["Platform"];
+            currRequest["SessionID"] = responseJSON["SessionID"];
+            currRequest["CurrentStep"] = responseJSON["CurrentStep"];
+            currRequest["SubFlow"] = responseJSON["SubFlow"];
+            currRequest["TID"] = responseJSON["TID"];
+            currRequest["Level"] = responseJSON["Level"];
         }
+        session.userData.prevRequest = currRequest;
 
-        var Client = require('node-rest-client').Client;
-        var client = new Client();
-        // set content-type header and data as json in args parameter 
-        //session.send("Client created...");
-        var args = {
-            "headers": { "Content-Type": "application/json" },
-            "data" : reqData
-        };
-        //session.send("Sending request...");
-        var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
-            try {
-                //session.send("got the data:" + data);                
-                // parsed response body as js object 
-                var parsedData = "";
-                if (null != data) {         
-                    session.send("resp:" + data);         
-                    parsedData = JSON.parse(data);
-                    //Get the relevant fields from the parsedData and send them 
-                    //during subsequent request.
-                    session.send("resp2:");         
-                    var inputsJSON = parsedData[0]["Inputs"]["newTemp"]["Section"]["Inputs"];
-                    var currRequest = {};
-                    if (null != inputsJSON) {
-                        session.send("resp3:");         
-                        currRequest["Platform"] = inputsJSON["Platform"];
-                        currRequest["SessionID"] = inputsJSON["SessionID"];
-                        currRequest["CurrentStep"] = inputsJSON["CurrentStep"];
-                        currRequest["SubFlow"] = inputsJSON["SubFlow"];
-                        currRequest["TID"] = inputsJSON["TID"];
-                        currRequest["Level"] = inputsJSON["Level"];
-                        session.send("resp2:");         
-                    }
-                    session.userData.prevRequest = currRequest;
-                    var ques = inputsJSON["Response"];
-                    var quesType = inputsJSON["user-response-type"];
-                    session.send("quesType:" + quesType);
-                    if (null != ques) {
-                        builder.Prompts.text(session, ques);
-                    }
-                }
-                else {
-                    session.send("Response is Empty!");
-                    session.endDialog();
-                }
-            }
-            catch (ex) {
-                session.send("Error:" + ex);
-            }
-        });
-        req.on("error", function(err) {
-            session.send("Error:" + err);
-            session.endDialog();
-        });
+        var questionType = responseJSON["user-response-type"];
+        switch (questionType) {
+            case "text":
+                session.beginDialog("/processText", { "response": responseJSON });
+                break;
+            case "choice":
+                session.beginDialog("/processChoice", { "response": responseJSON });
+                break;
+        }
+    });
+});
+
+bot.dialog("/processText", [
+    function (session, args) {
+        var response = args["response"];
+        if (null != response) {
+            var questionText = response["Response"]["text"];
+            builder.Prompts.text(session, questionText);
+        }
     },
     function (session, results) {
-        if(results.response) {
-            //session.send("Your choice is:" + results.response);
-            if (null != session.userData.prevRequest) {                
+        if (results.response) {
+            if (null != session.userData.prevRequest) {
                 if (null != session.userData.prevRequest["Request"]) {
                     delete session.userData.prevRequest["Request"];
                 }
-                session.userData.prevRequest["Request"] = {"ThisValue": results.response};
+                session.userData.prevRequest["Request"] = { "ThisValue": results.response };
             }
-            //session.endDialog();
-            session.beginDialog("/");
         }
+        session.endDialog();
+    }    
+]);
+
+bot.dialog("/processChoice", [
+    function (session, args) {
+        var response = args["response"];
+        if (null != response) {
+            var questionText = response["Response"]["text"];
+            var choiceArr = response["Response"]["choice"];
+            builder.Prompts.choice(session, questionText, choiceArr);
+        }
+    },
+    function (session, results) {
+        if (results.response && results.response.entity) {
+            var userChoice = results.response.entity;
+            if (null != session.userData.prevRequest) {
+                if (null != session.userData.prevRequest["Request"]) {
+                    delete session.userData.prevRequest["Request"];
+                }
+                session.userData.prevRequest["Request"] = { "ThisValue": userChoice };
+            }
+        }
+        session.endDialog();
     }
 ]);
