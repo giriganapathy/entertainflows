@@ -31,6 +31,13 @@ bot.dialog('/', function (session) {
     }
 
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
+
+        if (null != err) {
+            session.send(err.description);
+            session.endDialog();
+            return;
+        }
+
         var currRequest = {};
         if (null != responseJSON) {
             currRequest["Platform"] = responseJSON["Platform"];
