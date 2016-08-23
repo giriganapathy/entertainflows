@@ -34,7 +34,7 @@ bot.dialog('/', [
             "data": reqData
         };
         //session.send("Sending request...");
-        var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
+        var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
             try {
                 //session.send("got the data:" + data);                
                 // parsed response body as js object 
@@ -55,7 +55,7 @@ bot.dialog('/', [
                         currRequest["SubFlow"] = inputsJSON["SubFlow"];
                         currRequest["TID"] = inputsJSON["TID"];
                         currRequest["Level"] = inputsJSON["Level"];
-                        session.send("resp4:");
+                        session.send("resp2:");
                     }
                     session.userData.prevRequest = currRequest;
                     var ques = inputsJSON["Response"];
