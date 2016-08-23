@@ -44,8 +44,22 @@ bot.dialog('/', [
                 var parsedData = "";
                 if (null != data) {                    
                     parsedData = JSON.parse(data);
-                    session.userData.prevRequest = parsedData;
-                    var ques = parsedData["Response"];
+                    //Get the relevant fields from the parsedData and send them 
+                    //during subsequent request.
+                    var inputsJSON = parsedData["Inputs"]["newTemp"]["Section"]["Inputs"];
+                    var currRequest = {};
+                    if (null != inputsJSON) {
+                        currRequest["Platform"] = inputsJSON["Platform"];
+                        currRequest["SessionID"] = inputsJSON["SessionID"];
+                        currRequest["CurrentStep"] = inputsJSON["CurrentStep"];
+                        currRequest["SubFlow"] = inputsJSON["SubFlow"];
+                        currRequest["TID"] = inputsJSON["TID"];
+                        currRequest["Level"] = inputsJSON["Level"];
+                    }
+                    session.userData.prevRequest = currRequest;
+                    var ques = inputsJSON["Response"];
+                    var quesType = inputsJSON["user-response-type"];
+                    session.send("quesType:" + quesType);
                     if (null != ques) {
                         builder.Prompts.text(session, ques);
                     }
@@ -67,8 +81,7 @@ bot.dialog('/', [
     function (session, results) {
         if(results.response) {
             //session.send("Your choice is:" + results.response);
-            if (null != session.userData.prevRequest) {
-                delete session.userData.prevRequest["Response"];
+            if (null != session.userData.prevRequest) {                
                 if (null != session.userData.prevRequest["Request"]) {
                     delete session.userData.prevRequest["Request"];
                 }
