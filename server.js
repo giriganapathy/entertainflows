@@ -27,6 +27,8 @@ bot.dialog('/', function (session) {
         prevRequest = session.userData.prevRequest;
     }
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
+        session.send("1:" + err);
+        session.send("2:" + responseJSON);
         if (null != err) {
             session.send(err.description);
             session.endDialog();
