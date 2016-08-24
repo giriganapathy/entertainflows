@@ -18,6 +18,7 @@ var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log("%s listening to %s", server.name, server.url);
 });
+
 var bot = new builder.UniversalBot(connector);
 server.post("/api/messages", connector.listen());
 
@@ -43,16 +44,12 @@ bot.dialog('/', function (session) {
     }
     
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
-        if (null != err) {
-            if (null != err.data && null != err.description) {
-                session.send("Error:" + err.description);
-                session.send("Raw Data:" + err.data);
-            }
-
-            if (null != session.userData.prevRequest) {
-                delete session.userData.prevRequest;
-            }
-
+        if (null != err) {            
+            session.send("Error:" + err.description);
+            session.send("Raw Data:" + err.data);
+            //if (null != session.userData.prevRequest) {
+                //delete session.userData.prevRequest;
+            //}
             session.endDialog();
             return;
         }

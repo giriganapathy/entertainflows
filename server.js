@@ -39,13 +39,11 @@ bot.dialog('/', function (session) {
     }
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
         if (null != err) {
-            if (null != err.data && null != err.description) {
-                session.send("Error:" + err.description);
-                session.send("Raw Data:" + err.data);
-            }
-            if (null != session.userData.prevRequest) {
-                delete session.userData.prevRequest;
-            }
+            session.send("Error:" + err.description);
+            session.send("Raw Data:" + err.data);
+            //if (null != session.userData.prevRequest) {
+            //delete session.userData.prevRequest;
+            //}
             session.endDialog();
             return;
         }
