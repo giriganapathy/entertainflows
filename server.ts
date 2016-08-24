@@ -3,7 +3,7 @@ author: giri ganapathy
 -----------------------------------------------------------------------------*/
 var builder = require('botbuilder');
 var restify = require("restify");
-var ufd = require("./ufd-integration.js");
+var ufd = require("./ufd-integration");
 
 // Create LUIS Dialog that points at our model and add it as the root '/' dialog for our Cortana Bot.
 //var model = process.env.model || 'https://api.projectoxford.ai/luis/v1/application?id=c413b2ef-382c-45bd-8ff0-f76d60e2a821&subscription-key=6d0966209c6e4f6b835ce34492f3e6d9&q=';
@@ -31,14 +31,13 @@ bot.dialog('/', function (session) {
     }
 
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
-        session.send("1:" + err);
-        session.send("2:" + responseJSON);
         if (null != err) {
-            session.send(err.description);
+            session.send("Error:" + err.description);
+            session.send("Raw Data:" + err.data);
             session.endDialog();
             return;
         }
-
+        //session.send("2:" + responseJSON);
         var currRequest = {};
         if (null != responseJSON) {
             currRequest["Platform"] = responseJSON["Platform"];
@@ -79,8 +78,8 @@ bot.dialog("/processText", [
                 session.userData.prevRequest["Request"] = { "ThisValue": results.response };
             }
         }
-        session.endDialog();
-    }    
+        session.replaceDialog("/");
+    }
 ]);
 
 bot.dialog("/processChoice", [
@@ -102,6 +101,6 @@ bot.dialog("/processChoice", [
                 session.userData.prevRequest["Request"] = { "ThisValue": userChoice };
             }
         }
-        session.endDialog();
+        session.replaceDialog("/");
     }
 ]);

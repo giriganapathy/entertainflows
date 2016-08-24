@@ -10,7 +10,7 @@
 		"headers": { "Content-Type": "application/json" },
 		"data": reqData
 	};
-	var req = client.post("https://www98.verizon.com/Icaddatasvcprivate/restapi.ashx", args, function (data, response) {
+	var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
 		try {
 			
 			// parsed response body as js object 
@@ -27,7 +27,8 @@
 			}
 			else {
 				var err = {
-					"description" : "Response data is empty!"
+					"description" : "Response data is empty!",
+					"data" : data
 				};
 				if (null != fnCallback && typeof fnCallback == "function") {
 					fnCallback(err, null);
@@ -36,7 +37,8 @@
 		}
         catch (ex) {
 			var err = {
-				"description" : "Exception occurred:" + ex
+				"description" : "Exception occurred:" + ex,
+				"data" : data
 			};
 			if (null != fnCallback && typeof fnCallback == "function") {
 				fnCallback(err, null);
@@ -45,11 +47,12 @@
 	});
 	req.on("error", function (errInfo) {
 		var err = {
-			"description" : "Exception occurred:" + errInfo
+			"description" : "Exception occurred:" + errInfo,
+			"data" : data
 		};
 		if (null != fnCallback && typeof fnCallback == "function") {
 			fnCallback(err, null);
 		}
 	});
 };
-module.exports = lookupQuestion;
+module.exports.lookupQuestion = lookupQuestion;
