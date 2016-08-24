@@ -40,7 +40,7 @@ bot.dialog('/', function (session) {
             }
             temp = temp + ", ";            
         }        
-        session.send(temp);
+        session.send(temp + "");
     }
     
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {

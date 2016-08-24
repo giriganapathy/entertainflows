@@ -11,8 +11,7 @@
 		"data": reqData
 	};
 	var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
-		try {
-			
+		try {			
 			// parsed response body as js object 
 			var parsedData = "";
 			if (null != data) {
