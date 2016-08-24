@@ -88,7 +88,8 @@ bot.dialog("/processChoice", [
         if (null != response) {
             var questionText = response["Response"]["text"];
             var choiceArr = response["Response"]["choice"];
-            builder.Prompts.choice(session, questionText, choiceArr, { "listStyle": "button" });
+            var style = builder.ListStyle["button"];
+            builder.Prompts.choice(session, questionText, choiceArr, { "listStyle": style });
         }
     },
     function (session, results) {
