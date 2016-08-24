@@ -33,6 +33,7 @@ bot.dialog('/', function (session) {
             else {
                 temp = temp + (k + ":" + prevRequest[k]);
             }
+            temp = temp + ", ";
         }
         session.send(temp);
     }
@@ -40,6 +41,9 @@ bot.dialog('/', function (session) {
         if (null != err) {
             session.send("Error:" + err.description);
             session.send("Raw Data:" + err.data);
+            if (null != session.userData.prevRequest) {
+                delete session.userData.prevRequest;
+            }
             session.endDialog();
             return;
         }
