@@ -81,8 +81,15 @@ bot.dialog("/processChoice", [
         if (null != response) {
             var questionText = response["Response"]["text"];
             var choiceArr = response["Response"]["choice"];
-            var style = builder.ListStyle["button"];
-            builder.Prompts.choice(session, questionText, choiceArr, { "listStyle": style });
+            var sourceInfo = session.message.source;
+            session.send(sourceInfo);
+            if ("webchat" == sourceInfo) {
+                builder.Prompts.choice(session, questionText, choiceArr);
+            }
+            else {
+                var style = builder.ListStyle["button"];
+                builder.Prompts.choice(session, questionText, choiceArr, { "listStyle": style });
+            }
         }
     },
     function (session, results) {
