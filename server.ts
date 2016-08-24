@@ -28,7 +28,9 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        session.send(prevRequest.toString());
+        for (var k in prevRequest) {
+            session.send(k + ":" + prevRequest[k]);
+        }        
     }
     
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
