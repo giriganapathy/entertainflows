@@ -108,8 +108,7 @@ bot.dialog("/processChoice", [
         var response = args["response"];
         if (null != response) {
             var questionText = response["Response"]["text"];
-            var choiceArr = response["Response"]["choice"];
-            
+            var choiceArr = response["Response"]["choice"];            
             var sourceInfo = session.message.source;
 
             if ("webchat" == sourceInfo) {
