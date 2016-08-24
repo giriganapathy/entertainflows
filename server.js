@@ -94,11 +94,11 @@ bot.dialog("/processChoice", [
     function (session, results) {
         if (results.response && results.response.entity) {
             var userChoice = results.response.entity;
-            session.send("userChoice:" + userChoice);
             if (null != session.userData.prevRequest) {
                 if (null != session.userData.prevRequest["Request"]) {
                     delete session.userData.prevRequest["Request"];
                 }
+                session.message.text = userChoice;
                 session.userData.prevRequest["Request"] = { "ThisValue": userChoice };
             }
         }
