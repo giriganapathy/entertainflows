@@ -56,6 +56,7 @@ bot.dialog('/', function (session) {
             currRequest["SubFlow"] = responseJSON["SubFlow"];
             currRequest["TID"] = responseJSON["TID"];
             currRequest["Level"] = responseJSON["Level"];
+            currRequest["Flow"] = responseJSON["SubFlow"];
         }
         session.userData.prevRequest = currRequest;
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
