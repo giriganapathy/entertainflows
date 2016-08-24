@@ -78,6 +78,9 @@ bot.dialog('/', function (session) {
             case "choice":
                 session.beginDialog("/processChoice", { "response": response});
                 break;
+            default:
+                session.beginDialog("/processText", { "response": response });
+                break;
         }
     });
 });
