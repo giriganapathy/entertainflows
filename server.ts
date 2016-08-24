@@ -90,7 +90,7 @@ bot.dialog("/processChoice", [
             var choiceArr = response["Response"]["choice"];
             
             var sourceInfo = session.message.source;
-            session.send(sourceInfo);
+
             if ("webchat" == sourceInfo) {
                 builder.Prompts.choice(session, questionText, choiceArr);
             }
@@ -103,6 +103,7 @@ bot.dialog("/processChoice", [
     function (session, results) {
         if (results.response && results.response.entity) {
             var userChoice = results.response.entity;
+            session.send("userChoice:" + userChoice);
             if (null != session.userData.prevRequest) {
                 if (null != session.userData.prevRequest["Request"]) {
                     delete session.userData.prevRequest["Request"];
