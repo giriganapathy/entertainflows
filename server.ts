@@ -44,9 +44,10 @@ bot.dialog('/', function (session) {
     
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
         if (null != err) {
-            session.send("Error:" + err.description);
-            session.send("Raw Data:" + err.data);
-
+            if (null != err.data && null != err.description) {
+                session.send("Error:" + err.description);
+                session.send("Raw Data:" + err.data);
+            }
 
             if (null != session.userData.prevRequest) {
                 delete session.userData.prevRequest;
@@ -58,8 +59,9 @@ bot.dialog('/', function (session) {
         //session.send("2:" + responseJSON);
         var currRequest = {};
         if (null != responseJSON) {
-            currRequest["Platform"] = responseJSON["Platform"];
-            currRequest["SessionID"] = responseJSON["SessionID"];
+            
+            currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
+            currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
             currRequest["CurrentStep"] = responseJSON["CurrentStep"];
             currRequest["SubFlow"] = responseJSON["SubFlow"];
             currRequest["TID"] = responseJSON["TID"];
@@ -67,13 +69,16 @@ bot.dialog('/', function (session) {
         }
         session.userData.prevRequest = currRequest;
 
-        var questionType = responseJSON["user-response-type"];
+        var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
+        var questionType = response["user-response-type"];
+        
+
         switch (questionType) {
             case "text":
-                session.beginDialog("/processText", { "response": responseJSON });
+                session.beginDialog("/processText", { "response": response});
                 break;
             case "choice":
-                session.beginDialog("/processChoice", { "response": responseJSON });
+                session.beginDialog("/processChoice", { "response": response});
                 break;
         }
     });

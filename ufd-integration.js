@@ -20,7 +20,10 @@
 				//Get the relevant fields from the parsedData and send them 
 				//during subsequent request.
 				
-				var inputsJSON = parsedData[0]["Inputs"]["newTemp"]["Section"]["Inputs"];
+				//var inputsJSON = parsedData[0]["Inputs"]["newTemp"]["Section"]["Inputs"];
+				var inputsJSON = parsedData[0];
+				
+
 				if (null != fnCallback && typeof fnCallback == "function") {
 					fnCallback(null, inputsJSON);
 				}
