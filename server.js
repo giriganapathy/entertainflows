@@ -37,7 +37,9 @@ bot.dialog('/', function (session) {
         }
         session.send(temp + "");
     }
+    session.send("1");
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
+        session.send("2");
         if (null != err) {
             session.send("Error:" + err.description);
             session.send("Raw Data:" + err.data);
@@ -59,6 +61,7 @@ bot.dialog('/', function (session) {
             currRequest["Flow"] = responseJSON["SubFlow"];
         }
         session.userData.prevRequest = currRequest;
+        session.send("3");
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
         var questionType = response["user-response-type"];
         switch (questionType) {
@@ -98,6 +101,7 @@ bot.dialog("/processChoice", [
     function (session, args) {
         var response = args["response"];
         if (null != response) {
+            session.send("4");
             var questionText = response["Response"]["text"];
             var choiceArr = response["Response"]["choice"];
             var sourceInfo = session.message.source;
@@ -111,6 +115,7 @@ bot.dialog("/processChoice", [
         }
     },
     function (session, results) {
+        session.send("5");
         if (results.response && results.response.entity) {
             var userChoice = results.response.entity;
             if (null != session.userData.prevRequest) {
