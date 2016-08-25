@@ -37,19 +37,16 @@ bot.dialog('/', function (session) {
         }
         session.send(temp + "");
     }
-    session.send("1");
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
-        session.send("2");
         if (null != err) {
             session.send("Error:" + err.description);
             session.send("Raw Data:" + err.data);
-            //if (null != session.userData.prevRequest) {
-            //delete session.userData.prevRequest;
-            //}
+            if (null != session.userData.prevRequest) {
+                delete session.userData.prevRequest;
+            }
             session.endDialog();
             return;
         }
-        //session.send("2:" + responseJSON);
         var currRequest = {};
         if (null != responseJSON) {
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
@@ -61,7 +58,6 @@ bot.dialog('/', function (session) {
             currRequest["Flow"] = responseJSON["SubFlow"];
         }
         session.userData.prevRequest = currRequest;
-        session.send("3");
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
         var questionType = response["user-response-type"];
         switch (questionType) {
@@ -70,6 +66,9 @@ bot.dialog('/', function (session) {
                 break;
             case "choice":
                 session.beginDialog("/processChoice", { "response": response });
+                break;
+            case "carousel":
+                session.beginDialog("/processCarousel", { "response": response });
                 break;
             default:
                 session.beginDialog("/processText", { "response": response });
@@ -101,7 +100,6 @@ bot.dialog("/processChoice", [
     function (session, args) {
         var response = args["response"];
         if (null != response) {
-            session.send("4");
             var questionText = response["Response"]["text"];
             var choiceArr = response["Response"]["choice"];
             var sourceInfo = session.message.source;
@@ -118,6 +116,57 @@ bot.dialog("/processChoice", [
         session.send("5");
         if (results.response && results.response.entity) {
             var userChoice = results.response.entity;
+            if (null != session.userData.prevRequest) {
+                if (null != session.userData.prevRequest["Request"]) {
+                    delete session.userData.prevRequest["Request"];
+                }
+                session.message.text = userChoice;
+                session.userData.prevRequest["Request"] = { "ThisValue": userChoice };
+            }
+        }
+        session.replaceDialog("/");
+    }
+]);
+bot.dialog("/processCarousel", [
+    function (session, args) {
+        var response = args["response"];
+        if (null != response) {
+            var selectIdArr = [];
+            var heroCardArr = [];
+            var carouselArr = response["Response"]["carousel-arr"];
+            if (carouselArr != null) {
+                var carousel = null;
+                for (var idx = 0; idx < carouselArr.length; idx++) {
+                    carousel = carouselArr[idx];
+                    if (null != carousel) {
+                        heroCardArr.push(new builder.HeroCard(session)
+                            .title(carousel["title"])
+                            .subtitle(carousel["sub-title"])
+                            .images([
+                            builder.CardImage.create(session, carousel["image-url"])
+                                .tap(builder.CardAction.showImage(session, carousel["image-url"]))
+                        ])
+                            .buttons([
+                            builder.CardAction.openUrl(session, carousel["image-click-url"], "test"),
+                            builder.CardAction.imBack(session, carousel["id"], "Select")
+                        ]));
+                        selectIdArr.push("select:" + carousel["id"]);
+                    }
+                }
+                var msg = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(heroCardArr);
+                builder.Prompts.choice(session, msg, selectIdArr);
+            }
+        }
+    },
+    function (session, results) {
+        if (results.response && results.response.entity) {
+            var tempArr = results.response.entity.split(":");
+            if (tempArr != null) {
+                session.send("You have selected:" + tempArr[1]);
+            }
+            var userChoice = tempArr[1];
             if (null != session.userData.prevRequest) {
                 if (null != session.userData.prevRequest["Request"]) {
                     delete session.userData.prevRequest["Request"];
