@@ -65,6 +65,7 @@ bot.dialog('/', function (session) {
         if (null != session.userData.prevRequest) {
             delete session.userData.prevRequest;
         }
+
         session.userData.prevRequest = currRequest;
 
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
