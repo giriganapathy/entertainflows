@@ -25,17 +25,10 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        var temp = "";
-        for (var k in prevRequest) {
-            if (k == "Request") {
-                temp = temp + (k + ":" + prevRequest[k]["ThisValue"]);
-            }
-            else {
-                temp = temp + (k + ":" + prevRequest[k]);
-            }
-            temp = temp + ", ";
-        }
-        session.send(temp + "");
+        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
+    }
+    else {
+        session.send("Sending to UFD:" + JSON.stringify(reqData));
     }
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
         if (null != err) {
@@ -49,6 +42,12 @@ bot.dialog('/', function (session) {
         }
         var currRequest = {};
         if (null != responseJSON) {
+            try {
+                session.send("Response from UFD:" + JSON.stringify(responseJSON));
+            }
+            catch (ex) {
+                console.log(ex);
+            }
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
             currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
             currRequest["CurrentStep"] = responseJSON["CurrentStep"];
@@ -103,7 +102,7 @@ bot.dialog("/processChoice", [
             var questionText = response["Response"]["text"];
             var choiceArr = response["Response"]["choice"];
             var sourceInfo = session.message.source;
-            if ("webchat" == sourceInfo) {
+            if ("webchat" == sourceInfo || "console" == sourceInfo) {
                 builder.Prompts.choice(session, questionText, choiceArr);
             }
             else {
@@ -113,7 +112,6 @@ bot.dialog("/processChoice", [
         }
     },
     function (session, results) {
-        session.send("5");
         if (results.response && results.response.entity) {
             var userChoice = results.response.entity;
             if (null != session.userData.prevRequest) {
