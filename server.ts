@@ -62,9 +62,8 @@ bot.dialog('/', function (session) {
             currRequest["Flow"] = responseJSON["SubFlow"];
         }
         if (null != session.userData.prevRequest) {
-            delete session.userData.prevRequest;
+            //delete session.userData.prevRequest;
         }
-
         session.userData.prevRequest = currRequest;
 
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
