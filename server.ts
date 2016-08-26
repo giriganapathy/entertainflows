@@ -29,10 +29,10 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
+        session.send("Sending to UFD:" + JSON.stringify(prevRequest["CurrentStep"]));
     }
     else {
-        session.send("Sending to UFD:" + JSON.stringify(reqData));
+        //session.send("Sending to UFD:" + JSON.stringify(reqData));
     }
 
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
@@ -47,12 +47,12 @@ bot.dialog('/', function (session) {
         }
         var currRequest = {};
         if (null != responseJSON) {            
-            try {
+            /*try {
                 session.send("Response from UFD:" + JSON.stringify(responseJSON));
             }
             catch (ex) {
                 console.log(ex);
-            }
+            }*/
             
 
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
