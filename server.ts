@@ -61,7 +61,12 @@ bot.dialog('/', function (session) {
             currRequest["Level"] = responseJSON["Level"];
             currRequest["Flow"] = responseJSON["SubFlow"];
         }
+
+        if (null != session.userData.prevRequest) {
+            delete session.userData.prevRequest;
+        }
         session.userData.prevRequest = currRequest;
+
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
         var questionType = response["user-response-type"];
 
