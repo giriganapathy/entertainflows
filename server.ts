@@ -47,7 +47,6 @@ bot.dialog('/', function (session) {
         }
         var currRequest = {};
         if (null != responseJSON) {            
-
             try {
                 session.send("Response from UFD:" + JSON.stringify(responseJSON));
             }
