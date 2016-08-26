@@ -53,8 +53,6 @@ bot.dialog('/', function (session) {
             catch (ex) {
                 console.log(ex);
             }*/
-            
-
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
             currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
             currRequest["CurrentStep"] = responseJSON["CurrentStep"];
