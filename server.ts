@@ -29,7 +29,7 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
+        //session.send("Sending to UFD:" + JSON.stringify(prevRequest));
     }
     else {
         //session.send("Sending to UFD:" + JSON.stringify(reqData));
