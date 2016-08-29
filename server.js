@@ -20,22 +20,24 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 var bot = new builder.UniversalBot(connector);
 server.post("/api/messages", connector.listen());
 //middleware logging the request.
-bot.use({
+/*bot.use({
     botbuilder: function (session, next) {
         if (null != session.userData.prevRequest) {
             session.send(session.userData.prevRequest);
         }
         next();
     }
-});
+});*/
 //Bots Dialogs...
 bot.dialog('/', function (session) {
     var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
+        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
     }
     else {
+        session.send("Sending to UFD:" + JSON.stringify(reqData));
     }
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
         if (null != err) {
@@ -49,12 +51,12 @@ bot.dialog('/', function (session) {
         }
         var currRequest = {};
         if (null != responseJSON) {
-            /*try {
+            try {
                 session.send("Response from UFD:" + JSON.stringify(responseJSON));
             }
             catch (ex) {
                 console.log(ex);
-            }*/
+            }
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
             currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
             currRequest["CurrentStep"] = responseJSON["CurrentStep"];
@@ -64,6 +66,7 @@ bot.dialog('/', function (session) {
             currRequest["Flow"] = responseJSON["SubFlow"];
         }
         if (null != session.userData.prevRequest) {
+            delete session.userData.prevRequest;
         }
         session.userData.prevRequest = currRequest;
         var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];

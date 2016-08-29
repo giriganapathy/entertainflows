@@ -24,14 +24,14 @@ server.post("/api/messages", connector.listen());
 
 
 //middleware logging the request.
-bot.use({
+/*bot.use({
     botbuilder: function (session, next) {
         if (null != session.userData.prevRequest) {
             session.send(session.userData.prevRequest);
         }
         next();
     }
-});
+});*/
 
 //Bots Dialogs...
 bot.dialog('/', function (session) {
@@ -40,10 +40,10 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        //session.send("Sending to UFD:" + JSON.stringify(prevRequest));
+        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
     }
     else {
-        //session.send("Sending to UFD:" + JSON.stringify(reqData));
+        session.send("Sending to UFD:" + JSON.stringify(reqData));
     }
 
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
@@ -58,12 +58,12 @@ bot.dialog('/', function (session) {
         }
         var currRequest = {};
         if (null != responseJSON) {            
-            /*try {
+            try {
                 session.send("Response from UFD:" + JSON.stringify(responseJSON));
             }
             catch (ex) {
                 console.log(ex);
-            }*/
+            }
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
             currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
             currRequest["CurrentStep"] = responseJSON["CurrentStep"];
@@ -73,7 +73,7 @@ bot.dialog('/', function (session) {
             currRequest["Flow"] = responseJSON["SubFlow"];
         }
         if (null != session.userData.prevRequest) {
-            //delete session.userData.prevRequest;
+            delete session.userData.prevRequest;
         }
         session.userData.prevRequest = currRequest;
 
