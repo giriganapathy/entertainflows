@@ -50,40 +50,45 @@ bot.dialog('/', function (session) {
             return;
         }
         var currRequest = {};
-        if (null != responseJSON) {
-            try {
-                session.send("Response from UFD:" + JSON.stringify(responseJSON));
+        try {
+            if (null != responseJSON) {
+                try {
+                    session.send("Response from UFD:" + JSON.stringify(responseJSON));
+                }
+                catch (ex) {
+                    console.log(ex);
+                }
+                currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
+                currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
+                currRequest["CurrentStep"] = responseJSON["CurrentStep"];
+                currRequest["SubFlow"] = responseJSON["SubFlow"];
+                currRequest["TID"] = responseJSON["TID"];
+                currRequest["Level"] = responseJSON["Level"];
+                currRequest["Flow"] = responseJSON["SubFlow"];
             }
-            catch (ex) {
-                console.log(ex);
+            if (null != session.userData.prevRequest) {
+                delete session.userData.prevRequest;
             }
-            currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
-            currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
-            currRequest["CurrentStep"] = responseJSON["CurrentStep"];
-            currRequest["SubFlow"] = responseJSON["SubFlow"];
-            currRequest["TID"] = responseJSON["TID"];
-            currRequest["Level"] = responseJSON["Level"];
-            currRequest["Flow"] = responseJSON["SubFlow"];
+            session.userData.prevRequest = currRequest;
+            var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
+            var questionType = response["user-response-type"];
+            switch (questionType) {
+                case "text":
+                    session.beginDialog("/processText", { "response": response });
+                    break;
+                case "choice":
+                    session.beginDialog("/processChoice", { "response": response });
+                    break;
+                case "carousel":
+                    session.beginDialog("/processCarousel", { "response": response });
+                    break;
+                default:
+                    session.beginDialog("/processText", { "response": response });
+                    break;
+            }
         }
-        if (null != session.userData.prevRequest) {
-            delete session.userData.prevRequest;
-        }
-        session.userData.prevRequest = currRequest;
-        var response = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"];
-        var questionType = response["user-response-type"];
-        switch (questionType) {
-            case "text":
-                session.beginDialog("/processText", { "response": response });
-                break;
-            case "choice":
-                session.beginDialog("/processChoice", { "response": response });
-                break;
-            case "carousel":
-                session.beginDialog("/processCarousel", { "response": response });
-                break;
-            default:
-                session.beginDialog("/processText", { "response": response });
-                break;
+        catch (ex2) {
+            session.send("Error:" + ex2);
         }
     });
 });
