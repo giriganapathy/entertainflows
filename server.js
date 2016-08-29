@@ -34,10 +34,8 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
     }
     else {
-        session.send("Sending to UFD:" + JSON.stringify(reqData));
     }
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
         if (null != err) {
@@ -51,12 +49,12 @@ bot.dialog('/', function (session) {
         }
         var currRequest = {};
         if (null != responseJSON) {
-            try {
+            /*try {
                 session.send("Response from UFD:" + JSON.stringify(responseJSON));
             }
             catch (ex) {
                 console.log(ex);
-            }
+            }*/
             currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
             currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
             currRequest["CurrentStep"] = responseJSON["CurrentStep"];
@@ -104,6 +102,9 @@ bot.dialog("/processText", [
                 session.userData.prevRequest["Request"] = { "ThisValue": results.response };
             }
         }
+        else {
+            session.send("No response from Customer.2..");
+        }
         session.replaceDialog("/");
     }
 ]);
@@ -122,6 +123,9 @@ bot.dialog("/processChoice", [
                 builder.Prompts.choice(session, questionText, choiceArr, { "listStyle": style });
             }
         }
+        else {
+            session.send("No response from UFD.1..");
+        }
     },
     function (session, results) {
         if (results.response && results.response.entity) {
@@ -133,6 +137,9 @@ bot.dialog("/processChoice", [
                 session.message.text = userChoice;
                 session.userData.prevRequest["Request"] = { "ThisValue": userChoice };
             }
+        }
+        else {
+            session.send("No response from Customer.3..");
         }
         session.replaceDialog("/");
     }
@@ -169,6 +176,9 @@ bot.dialog("/processCarousel", [
                 builder.Prompts.choice(session, msg, selectIdArr);
             }
         }
+        else {
+            session.send("No response from UFD..2..");
+        }
     },
     function (session, results) {
         if (results.response && results.response.entity) {
@@ -184,6 +194,9 @@ bot.dialog("/processCarousel", [
                 session.message.text = userChoice;
                 session.userData.prevRequest["Request"] = { "ThisValue": userChoice };
             }
+        }
+        else {
+            session.send("No response from Customer..4..");
         }
         session.replaceDialog("/");
     }
