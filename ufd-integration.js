@@ -8,7 +8,7 @@
 	var client = new Client();
 	var args = {
 		"headers": { "Content-Type": "application/json" },
-		"data": reqData
+		"data": JSON.stringify(reqData)
 	};
 	var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
 		try {			
