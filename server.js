@@ -65,6 +65,7 @@ bot.dialog('/', function (session) {
                 currRequest["TID"] = responseJSON["TID"];
                 currRequest["Level"] = responseJSON["Level"];
                 currRequest["Flow"] = responseJSON["SubFlow"];
+                currRequest["SubFlow"] = currRequest["SubFlow"].replace(/\\/gi, "\\\\");
                 currRequest["Flow"] = currRequest["Flow"].replace(/\\/gi, "\\\\");
             }
             if (null != session.userData.prevRequest) {

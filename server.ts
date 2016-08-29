@@ -68,11 +68,12 @@ bot.dialog('/', function (session) {
                 currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
                 currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
                 currRequest["CurrentStep"] = responseJSON["CurrentStep"];
-                currRequest["SubFlow"] = responseJSON["SubFlow"];
+                currRequest["SubFlow"] = responseJSON["SubFlow"];                
                 currRequest["TID"] = responseJSON["TID"];
                 currRequest["Level"] = responseJSON["Level"];
                 currRequest["Flow"] = responseJSON["SubFlow"];
 
+                currRequest["SubFlow"] = currRequest["SubFlow"].replace(/\\/gi, "\\\\");
                 currRequest["Flow"] = currRequest["Flow"].replace(/\\/gi, "\\\\");
 
             }
