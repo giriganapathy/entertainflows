@@ -29,6 +29,7 @@ bot.use({
         if (null != session.userData.prevRequest) {
             session.send(session.userData.prevRequest);
         }
+        next();
     }
 });
 
