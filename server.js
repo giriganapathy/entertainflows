@@ -19,6 +19,14 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 });
 var bot = new builder.UniversalBot(connector);
 server.post("/api/messages", connector.listen());
+//middleware logging the request.
+bot.use({
+    botbuilder: function (session, next) {
+        if (null != session.userData.prevRequest) {
+            session.send(session.userData.prevRequest);
+        }
+    }
+});
 //Bots Dialogs...
 bot.dialog('/', function (session) {
     var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
