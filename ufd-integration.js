@@ -10,8 +10,8 @@
 		"headers": { "Content-Type": "application/json" },
 		"data": JSON.stringify(reqData)
 	};
-	//var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
-	var req = client.post("http://10.77.31.207/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
+	var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
+	//var req = client.post("http://10.77.31.207/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
 		try {			
 			// parsed response body as js object 
 			var parsedData = "";
