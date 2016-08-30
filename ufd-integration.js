@@ -51,7 +51,7 @@
 	req.on("error", function (errInfo) {
 		var err = {
 			"description" : "Exception occurred:" + errInfo,
-			"data" : data
+			"data" : ""
 		};
 		if (null != fnCallback && typeof fnCallback == "function") {
 			fnCallback(err, null);

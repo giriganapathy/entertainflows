@@ -40,10 +40,10 @@ bot.dialog('/', function (session) {
     var prevRequest = null;
     if (null != session.userData.prevRequest) {
         prevRequest = session.userData.prevRequest;
-        session.send("Sending to UFD:" + JSON.stringify(prevRequest));
+        //session.send("Sending to UFD:" + JSON.stringify(prevRequest));
     }
     else {
-        session.send("Sending to UFD:" + JSON.stringify(reqData));
+        //session.send("Sending to UFD:" + JSON.stringify(reqData));
     }
 
     ufd.lookupQuestion(session.message.text, prevRequest, function (err, responseJSON) {
@@ -59,12 +59,12 @@ bot.dialog('/', function (session) {
         var currRequest = {};
         try {
             if (null != responseJSON) {
-                try {
+                /*try {
                     session.send("Response from UFD:" + JSON.stringify(responseJSON));
                 }
                 catch (ex) {
                     console.log(ex);
-                }
+                }*/
                 currRequest["Platform"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["Platform"];
                 currRequest["SessionID"] = responseJSON["Inputs"]["newTemp"]["Section"]["Inputs"]["SessionID"];
                 currRequest["CurrentStep"] = responseJSON["CurrentStep"];
@@ -172,7 +172,7 @@ bot.dialog("/processCarousel", [
     function (session, args) {
         var response = args["response"];
         if (null != response) {
-            var selectIdArr = [];
+            var selectIds = "";
             var heroCardArr = [];
             var carouselArr = response["Response"]["carousel-arr"];
             if (carouselArr != null) {
@@ -193,14 +193,18 @@ bot.dialog("/processCarousel", [
                                     builder.CardAction.imBack(session, carousel["id"], "Select")
                                 ])
                         );
-                        selectIdArr.push("select:" + carousel["id"]);
+                        selectIds = selectIds + "select:" + carousel["id"];
+
+                        if ((idx+1) != carouselArr.length) {
+                            selectIds = selectIds + "|";
+                        }
                     }
                 }
                 var msg = new builder.Message(session)
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(heroCardArr);
 
-                builder.Prompts.choice(session, msg, selectIdArr);
+                builder.Prompts.choice(session, msg, selectIds);
             }
         }
         else {
