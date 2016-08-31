@@ -96,7 +96,7 @@ bot.dialog("/processText", [
     function (session, args) {
         var response = args["response"];
         if (null != response) {
-            var questionText = response["Response"]["text"];
+            var questionText = response["Response"];
             builder.Prompts.text(session, questionText);
         }
     },
@@ -193,9 +193,6 @@ bot.dialog("/processCarousel", [
     function (session, results) {
         if (results.response && results.response.entity) {
             var tempArr = results.response.entity.split(":");
-            if (tempArr != null) {
-                session.send("You have selected:" + tempArr[1]);
-            }
             var userChoice = tempArr[1];
             if (null != session.userData.prevRequest) {
                 if (null != session.userData.prevRequest["Request"]) {
