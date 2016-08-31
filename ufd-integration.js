@@ -1,4 +1,5 @@
-﻿var lookupQuestion = function (responseText, prevRequest, fnCallback) {
+﻿var headersInfo = { "Content-Type": "application/json" };
+var lookupQuestion = function (responseText, prevRequest, fnCallback) {
 	var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
 	if (null != prevRequest && null != prevRequest["Request"]) {
 		reqData = prevRequest;
@@ -7,7 +8,7 @@
 	var Client = require('node-rest-client').Client;
 	var client = new Client();
 	var args = {
-		"headers": { "Content-Type": "application/json" },
+		"headers": headersInfo,
 		"data": JSON.stringify(reqData)
 	};
 	var req = client.post("https://www98.verizon.com/foryourhome/vzrepair/flowengine/restapi.ashx", args, function (data, response) {
@@ -23,6 +24,7 @@
 				//var inputsJSON = parsedData[0]["Inputs"]["newTemp"]["Section"]["Inputs"];
 				var inputsJSON = parsedData[0];
 				
+				headersInfo = response.headers;
 
 				if (null != fnCallback && typeof fnCallback == "function") {
 					fnCallback(null, inputsJSON);
@@ -50,7 +52,7 @@
 	});
 	req.on("error", function (errInfo) {
 		var err = {
-			"description" : "Exception occurred:" + errInfo,
+			"description" : "Exception occurred:" + errInfo.message,
 			"data" : ""
 		};
 		if (null != fnCallback && typeof fnCallback == "function") {
