@@ -35,6 +35,16 @@ server.post("/api/messages", connector.listen());
 
 //Bots Dialogs...
 bot.dialog('/', function (session) {
+
+
+    if ("deleteProfile" == session.message.text) {
+        if (null != session.userData.prevRequest) {
+            delete session.userData.prevRequest;
+        }
+        session.endDialog("Thanks for using me...And Say Hi to start again");
+        return;
+    }
+
     var reqData = { "Flow": "TroubleShooting Flows\\Test\\GSTest.xml", "Request": { "ThisValue": "1" } };
 
     var prevRequest = null;
