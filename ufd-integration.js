@@ -4,6 +4,9 @@ var lookupQuestion = function (responseText, prevRequest, fnCallback) {
 	if (null != prevRequest && null != prevRequest["Request"]) {
 		reqData = prevRequest;
 	}
+	else {
+		headersInfo = { "Content-Type": "application/json" };	
+	}
 	
 	var Client = require('node-rest-client').Client;
 	var client = new Client();
